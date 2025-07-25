@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/destinydominic13/Weather#readme",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2"
