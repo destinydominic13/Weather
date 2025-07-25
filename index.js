@@ -1,35 +1,33 @@
-async function sendSMS(phoneNumbersArray, message) {
-    try {
-        const response = await fetch('https://api.sandbox.africastalking.com/version1/messaging/bulk', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'accept': 'application/json',
-                'apiKey': 'atsk_666eb0bb76af5210868e0c3e18f772b1b056c9b31fb05bc51f6febee4248a8991f9fc538'
-            },
-            body: JSON.stringify({
-                username: 'sandbox',
-                phoneNumber: phoneNumbersArray.join(','),
-                message: message,
-                senderId: '91941'  // senderId
-            }),
+
+
+function sendSMS(phoneNumbersArray, message) {
+  return fetch('http://localhost:3001/send-sms', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      phoneNumber: phoneNumbersArray.join(','), // Join if sending to multiple numbers
+      message: message,
+    }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(errorDetails => {
+          throw new Error(`Server responded with ${response.status}: ${errorDetails}`);
         });
-
-        console.log(`Response status: ${response.status}`);
-        
-        if (!response.ok) {
-            console.log(`Error sending SMS: ${response.statusText}`);
-            throw new Error(`Error sending SMS: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('Failed to send SMS:', error);
-        throw error;
-    }
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('SMS sent successfully:', data);
+      return data;
+    })
+    .catch(error => {
+      console.error('Failed to send SMS:', error);
+      throw error;
+    });
 }
-
 
 document.addEventListener('DOMContentLoaded', function () {
       // DOM Elements
@@ -246,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
           // Send SMS using Africa's Talking API
-          const response = await sendSMS(phoneNumbers, message);
+          const response = await sendSMS(phoneNumbers, message).then(res =>console.log(res.json())).catch(err => console.log(err));
 
           showStatus(`Successfully sent alert to ${phoneNumbers.length} subscriber${phoneNumbers.length !== 1 ? 's' : ''}`, 'success');
 
@@ -281,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
           // Send SMS using Africa's Talking API
-          const response = await sendSMS(phoneNumbers, message);
+          const response = await sendSMS(phoneNumbers, message).then(res =>console.log(res.json())).catch(err => console.log(err));
 
           showStatus(`Successfully sent alert to ${phoneNumbers.length} subscriber${phoneNumbers.length !== 1 ? 's' : ''}`, 'success');
 
